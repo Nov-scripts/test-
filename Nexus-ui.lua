@@ -6,6 +6,7 @@ local blue = Color3.fromRGB(0, 115, 255)
 local dark = Color3.fromRGB(20, 20, 20)
 local lightDark = Color3.fromRGB(40, 40, 40)
 
+-- Dragging function that moves a frame (and anything inside it)
 local function makeDraggable(frame)
 	local dragging = false
 	local dragStart, startPos
@@ -43,36 +44,49 @@ function Nexus:CreateWindow(title)
 	gui.ResetOnSpawn = false
 	gui.Parent = game.CoreGui
 
-	-- Tab panel (always visible)
+	local totalWidth = 440
+	local tabWidth = 120 -- wide enough for "Settings" and more
+	local mainWidth = totalWidth - tabWidth
+	local height = 300
+
+	-- Container frame that holds tab panel + main UI together
+	local Container = Instance.new("Frame")
+	Container.Size = UDim2.new(0, totalWidth, 0, height)
+	Container.Position = UDim2.new(0.3, 0, 0.3, 0)
+	Container.BackgroundTransparency = 1 -- invisible container
+	Container.Parent = gui
+
+	-- Tab panel (left side)
 	local TabPanel = Instance.new("Frame")
-	TabPanel.Size = UDim2.new(0, 40, 0, 300)
-	TabPanel.Position = UDim2.new(0.3, -40, 0.3, 0) -- positioned just left of main frame
+	TabPanel.Size = UDim2.new(0, tabWidth, 1, 0)
+	TabPanel.Position = UDim2.new(0, 0, 0, 0)
 	TabPanel.BackgroundColor3 = lightDark
 	TabPanel.Name = "TabPanel"
-	TabPanel.Parent = gui
+	TabPanel.Parent = Container
 	Instance.new("UICorner", TabPanel).CornerRadius = UDim.new(0, 12)
 
-	local TabLabel = Instance.new("TextLabel")
-	TabLabel.Text = "Nov"
-	TabLabel.Size = UDim2.new(1, 0, 0, 40)
-	TabLabel.Position = UDim2.new(0, 0, 0, 10)
-	TabLabel.BackgroundTransparency = 1
-	TabLabel.TextColor3 = Color3.new(1, 1, 1)
-	TabLabel.Font = Enum.Font.GothamBold
-	TabLabel.TextSize = 20
-	TabLabel.Parent = TabPanel
+	-- Title label on Tab Panel
+	local TabTitle = Instance.new("TextLabel")
+	TabTitle.Size = UDim2.new(1, 0, 0, 40)
+	TabTitle.Position = UDim2.new(0, 0, 0, 10)
+	TabTitle.BackgroundTransparency = 1
+	TabTitle.Text = title or "Settings"
+	TabTitle.TextColor3 = Color3.new(1, 1, 1)
+	TabTitle.Font = Enum.Font.GothamBold
+	TabTitle.TextSize = 20
+	TabTitle.TextXAlignment = Enum.TextXAlignment.Center
+	TabTitle.Parent = TabPanel
 
-	-- Main UI Frame (starts visible)
+	-- Main UI Frame (right side)
 	local MainFrame = Instance.new("Frame")
-	MainFrame.Size = UDim2.new(0, 420, 0, 300)
-	MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+	MainFrame.Size = UDim2.new(0, mainWidth, 1, 0)
+	MainFrame.Position = UDim2.new(0, tabWidth, 0, 0)
 	MainFrame.BackgroundColor3 = blue
-	MainFrame.BackgroundTransparency = 0
 	MainFrame.Name = "MainFrame"
-	MainFrame.Parent = gui
+	MainFrame.Parent = Container
 	Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
-	-- TopBar with title and close button
+	-- TopBar inside main UI (title + close button)
 	local TopBar = Instance.new("Frame")
 	TopBar.Size = UDim2.new(1, 0, 0, 35)
 	TopBar.Position = UDim2.new(0, 0, 0, 0)
@@ -80,17 +94,19 @@ function Nexus:CreateWindow(title)
 	TopBar.Parent = MainFrame
 	Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 12)
 
+	-- Title label inside top bar (optional, here for extra clarity, or hide it)
 	local TitleLabel = Instance.new("TextLabel")
 	TitleLabel.Size = UDim2.new(1, -40, 1, 0)
 	TitleLabel.Position = UDim2.new(0, 10, 0, 0)
 	TitleLabel.BackgroundTransparency = 1
-	TitleLabel.Text = title or "Nexus UI"
+	TitleLabel.Text = title or "Settings"
 	TitleLabel.TextColor3 = Color3.new(1, 1, 1)
 	TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 	TitleLabel.Font = Enum.Font.GothamBold
 	TitleLabel.TextSize = 18
 	TitleLabel.Parent = TopBar
 
+	-- Close button on top right
 	local Close = Instance.new("TextButton")
 	Close.Size = UDim2.new(0, 24, 0, 24)
 	Close.Position = UDim2.new(1, -28, 0, 6)
@@ -104,10 +120,10 @@ function Nexus:CreateWindow(title)
 	Instance.new("UICorner", Close).CornerRadius = UDim.new(1, 0)
 
 	Close.MouseButton1Click:Connect(function()
-		MainFrame.Visible = false
+		Container.Visible = false
 	end)
 
-	-- Content Panel
+	-- Content Panel inside main frame below top bar
 	local ContentPanel = Instance.new("Frame")
 	ContentPanel.Size = UDim2.new(1, 0, 1, -35)
 	ContentPanel.Position = UDim2.new(0, 0, 0, 35)
@@ -115,23 +131,25 @@ function Nexus:CreateWindow(title)
 	ContentPanel.Parent = MainFrame
 	Instance.new("UICorner", ContentPanel).CornerRadius = UDim.new(0, 12)
 
-	-- Dragging the main UI frame only
-	makeDraggable(MainFrame)
+	-- Drag whole container (tab + main UI) as one
+	makeDraggable(Container)
 
-	-- Toggle main UI visibility when tab panel clicked
+	-- Toggle UI visibility when clicking tab panel
 	TabPanel.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			MainFrame.Visible = not MainFrame.Visible
+			Container.Visible = not Container.Visible
 		end
 	end)
 
 	return {
-		MainFrame = MainFrame,
+		Container = Container,
 		TabPanel = TabPanel,
-		Content = ContentPanel,
+		MainFrame = MainFrame,
 		TopBar = TopBar,
 		TitleLabel = TitleLabel,
 		CloseButton = Close,
+		Content = ContentPanel,
+		TabTitle = TabTitle,
 	}
 end
 
