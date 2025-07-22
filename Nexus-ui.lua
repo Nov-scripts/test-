@@ -1,16 +1,11 @@
---// Services
+local Nexus = {}
+
 local UIS = game:GetService("UserInputService")
 
---// Colors
 local blue = Color3.fromRGB(0, 115, 255)
-local darkBlue = Color3.fromRGB(10, 25, 50)
-local darkerBlack = Color3.fromRGB(10, 10, 10) -- darker for TabPanel
-local black = Color3.fromRGB(20, 20, 20)
+local darkerBlack = Color3.fromRGB(10, 10, 10)
+local TRANSPARENCY = 0 -- zero to see stuff clearly now
 
---// Transparency Level (0 = solid, 1 = invisible)
-local TRANSPARENCY = 0.3
-
---// Drag Function
 local function makeDraggable(frame)
 	local dragging = false
 	local dragStart, startPos
@@ -42,17 +37,12 @@ local function makeDraggable(frame)
 	end)
 end
 
---// Create Window Function (UI Library)
-local Nexus = {}
-
 function Nexus:CreateWindow(title)
-	-- Main GUI
 	local gui = Instance.new("ScreenGui")
 	gui.Name = "NexusUI"
 	gui.ResetOnSpawn = false
 	gui.Parent = game.CoreGui
 
-	-- Main Frame
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Size = UDim2.new(0, 460, 0, 300)
 	MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
@@ -62,16 +52,14 @@ function Nexus:CreateWindow(title)
 	MainFrame.Parent = gui
 	Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
-	-- Top Bar (Title Bar)
 	local TopBar = Instance.new("Frame")
 	TopBar.Size = UDim2.new(1, 0, 0, 35)
 	TopBar.Position = UDim2.new(0, 0, 0, 0)
 	TopBar.BackgroundColor3 = darkerBlack
-	TopBar.BackgroundTransparency = TRANSPARENCY
+	TopBar.BackgroundTransparency = 0 -- zero to see it clearly
 	TopBar.Parent = MainFrame
 	Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 12)
 
-	-- Title Label
 	local TitleLabel = Instance.new("TextLabel")
 	TitleLabel.Size = UDim2.new(1, -10, 1, 0)
 	TitleLabel.Position = UDim2.new(0, 10, 0, 0)
@@ -85,7 +73,6 @@ function Nexus:CreateWindow(title)
 
 	makeDraggable(TopBar)
 
-	-- Tab Panel (Left)
 	local TabPanel = Instance.new("Frame")
 	TabPanel.Size = UDim2.new(0, 80, 1, -35)
 	TabPanel.Position = UDim2.new(0, 0, 0, 35)
@@ -94,16 +81,14 @@ function Nexus:CreateWindow(title)
 	TabPanel.Parent = MainFrame
 	Instance.new("UICorner", TabPanel).CornerRadius = UDim.new(0, 12)
 
-	-- Content Panel (Right)
 	local ContentPanel = Instance.new("Frame")
 	ContentPanel.Size = UDim2.new(1, -80, 1, -35)
 	ContentPanel.Position = UDim2.new(0, 80, 0, 35)
-	ContentPanel.BackgroundColor3 = darkBlue
+	ContentPanel.BackgroundColor3 = darkerBlack
 	ContentPanel.BackgroundTransparency = TRANSPARENCY
 	ContentPanel.Parent = MainFrame
 	Instance.new("UICorner", ContentPanel).CornerRadius = UDim.new(0, 12)
 
-	-- Close Button
 	local Close = Instance.new("TextButton")
 	Close.Size = UDim2.new(0, 24, 0, 24)
 	Close.Position = UDim2.new(1, -28, 0, 6)
@@ -120,16 +105,14 @@ function Nexus:CreateWindow(title)
 		gui.Enabled = false
 	end)
 
-	-- Return UI table to add content inside ContentPanel
-	local UI = {}
-	UI.MainFrame = MainFrame
-	UI.TabPanel = TabPanel
-	UI.Content = ContentPanel
-	UI.TopBar = TopBar
-	UI.TitleLabel = TitleLabel
-	UI.CloseButton = Close
-
-	return UI
+	return {
+		MainFrame = MainFrame,
+		TabPanel = TabPanel,
+		Content = ContentPanel,
+		TopBar = TopBar,
+		TitleLabel = TitleLabel,
+		CloseButton = Close,
+	}
 end
 
 return Nexus
