@@ -4,7 +4,6 @@ local UIS = game:GetService("UserInputService")
 
 local blue = Color3.fromRGB(0, 115, 255)
 local darkerBlack = Color3.fromRGB(10, 10, 10)
-local TRANSPARENCY = 0 -- zero to see stuff clearly now
 
 local function makeDraggable(frame)
 	local dragging = false
@@ -47,7 +46,7 @@ function Nexus:CreateWindow(title)
 	MainFrame.Size = UDim2.new(0, 460, 0, 300)
 	MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
 	MainFrame.BackgroundColor3 = blue
-	MainFrame.BackgroundTransparency = TRANSPARENCY
+	MainFrame.BackgroundTransparency = 0
 	MainFrame.Name = "MainFrame"
 	MainFrame.Parent = gui
 	Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
@@ -56,7 +55,7 @@ function Nexus:CreateWindow(title)
 	TopBar.Size = UDim2.new(1, 0, 0, 35)
 	TopBar.Position = UDim2.new(0, 0, 0, 0)
 	TopBar.BackgroundColor3 = darkerBlack
-	TopBar.BackgroundTransparency = 0 -- zero to see it clearly
+	TopBar.BackgroundTransparency = 0
 	TopBar.Parent = MainFrame
 	Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0, 12)
 
@@ -71,21 +70,19 @@ function Nexus:CreateWindow(title)
 	TitleLabel.TextSize = 18
 	TitleLabel.Parent = TopBar
 
-	makeDraggable(TopBar)
-
 	local TabPanel = Instance.new("Frame")
-	TabPanel.Size = UDim2.new(0, 80, 1, -35)
+	TabPanel.Size = UDim2.new(0, 120, 1, -35)  -- wider tab panel
 	TabPanel.Position = UDim2.new(0, 0, 0, 35)
 	TabPanel.BackgroundColor3 = darkerBlack
-	TabPanel.BackgroundTransparency = TRANSPARENCY
+	TabPanel.BackgroundTransparency = 0.6  -- transparent but visible
 	TabPanel.Parent = MainFrame
 	Instance.new("UICorner", TabPanel).CornerRadius = UDim.new(0, 12)
 
 	local ContentPanel = Instance.new("Frame")
-	ContentPanel.Size = UDim2.new(1, -80, 1, -35)
-	ContentPanel.Position = UDim2.new(0, 80, 0, 35)
+	ContentPanel.Size = UDim2.new(1, -120, 1, -35)
+	ContentPanel.Position = UDim2.new(0, 120, 0, 35)
 	ContentPanel.BackgroundColor3 = darkerBlack
-	ContentPanel.BackgroundTransparency = TRANSPARENCY
+	ContentPanel.BackgroundTransparency = 0
 	ContentPanel.Parent = MainFrame
 	Instance.new("UICorner", ContentPanel).CornerRadius = UDim.new(0, 12)
 
@@ -104,6 +101,9 @@ function Nexus:CreateWindow(title)
 	Close.MouseButton1Click:Connect(function()
 		gui.Enabled = false
 	end)
+
+	-- Make dragging work on whole MainFrame (better UX)
+	makeDraggable(MainFrame)
 
 	return {
 		MainFrame = MainFrame,
